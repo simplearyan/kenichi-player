@@ -43,6 +43,8 @@ export default function CustomPlayer({ playerRef, src, title, onEnd, filmstripVi
             className="w-full h-full object-contain ring-0 outline-none select-none"
             autoPlay
             onEnd={onEnd}
+            load="eager"
+            preload="auto"
         >
             <MediaProvider />
 

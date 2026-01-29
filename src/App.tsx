@@ -259,6 +259,21 @@ function App() {
     }
   };
 
+  // Preload next items in playlist
+  useEffect(() => {
+    if (playlist.length <= 1) return;
+
+    // Preload next 2 items
+    for (let i = 1; i <= 2; i++) {
+      const nextIndex = (currentIndex + i) % playlist.length;
+      const nextItem = playlist[nextIndex];
+      if (nextItem.type === 'image') {
+        const img = new Image();
+        img.src = getMediaUrl(nextItem.path);
+      }
+    }
+  }, [currentIndex, playlist]);
+
   const onVideoEnd = () => {
     // Auto-advance only if enabled
     if (autoAdvance && currentIndex < playlist.length - 1) {
@@ -347,6 +362,8 @@ function App() {
                   autoPlay
                   onEnd={onVideoEnd}
                   key={currentItem.path}
+                  load="eager"
+                  preload="auto"
                 >
                   <MediaProvider />
                   <DefaultAudioLayout icons={defaultLayoutIcons} />

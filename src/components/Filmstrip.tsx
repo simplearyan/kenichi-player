@@ -34,8 +34,8 @@ export default function Filmstrip({ items, currentIndex, onSelect, onRemove, vis
 
     return (
         // Docked at bottom, full width container
-        <div className="w-full bg-pro-950 p-4 animate-slide-up z-40 relative">
-            <div className="flex items-center justify-center gap-3 overflow-x-auto custom-scrollbar scroll-smooth pb-2" ref={scrollRef}>
+        <div className="w-full background-transparent p-4 animate-slide-up z-40 relative ">
+            <div className="flex items-center justify-center gap-3 overflow-x-auto custom-scrollbar scroll-smooth pb-0" ref={scrollRef}>
                 {items.map((item, index) => {
                     const isActive = index === currentIndex;
                     return (

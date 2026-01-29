@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { MediaPlayer, MediaProvider, type MediaPlayerInstance, useMediaState } from "@vidstack/react";
+import { MediaPlayer, MediaProvider, type MediaPlayerInstance } from "@vidstack/react";
 import {
   DefaultAudioLayout,
   defaultLayoutIcons,
@@ -8,17 +8,18 @@ import {
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/layouts/audio.css";
+import "@vidstack/react/player/styles/base.css";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { open } from '@tauri-apps/plugin-dialog';
 import { readDir, stat } from "@tauri-apps/plugin-fs";
-import { basename, extname } from "@tauri-apps/api/path"; // We might need to handle path parsing manually if these aren't available client-side easily, but usually they are.
-// Actually, simple string manipulation is safer/faster for basic extension checks in webview.
+// Basic extension checks using string manipulation is safer/faster in webview.
 
 import logo from "./assets/logo.png";
 import TitleBar from "./components/TitleBar";
 import Filmstrip, { MediaItem } from "./components/Filmstrip";
 import NavigationArrows from "./components/NavigationArrows";
 import Footer from "./components/Footer";
+import CustomPlayer from "./components/CustomPlayer";
 
 // Helper to check extensions
 const VIDEO_EXTS = ['.mp4', '.mkv', '.webm', '.mov', '.avi'];
@@ -92,19 +93,6 @@ function App() {
     }
   };
 
-  const loadFile = async (path: string) => {
-    try {
-      const info = await stat(path);
-      const item = createMediaItem(path, info.size);
-      if (item) {
-        setPlaylist([item]);
-        setCurrentIndex(0);
-      }
-    } catch (e) {
-      console.error("Failed to load file", e);
-    }
-  };
-
   // Protocol Handler
   const getMediaUrl = (path: string) => {
     const encodedPath = encodeURIComponent(path);
@@ -149,7 +137,8 @@ function App() {
       // Small timeout to allow React to ref the player after render
       setTimeout(() => {
         if (player.current) {
-          unsubscribe = player.current.subscribe(({ videoWidth, videoHeight, duration }) => {
+          unsubscribe = player.current.subscribe((state: any) => {
+            const { videoWidth, videoHeight, duration } = state;
             const parts: string[] = [];
             if (videoWidth && videoHeight) parts.push(`${videoWidth} x ${videoHeight}`);
             if (sizeStr) parts.push(sizeStr);
@@ -298,7 +287,7 @@ function App() {
         {playlist.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-fade-in pt-10">
             {/* Card Container */}
-            <div className="w-[480px] bg-pro-900/50  border border-pro-800 rounded-3xl p-10 flex flex-col items-center ">
+            <div className="w-[480px] bg-pro-900/50    rounded-3xl p-10 flex flex-col items-center ">
               <div className="mb-6 relative">
                 <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 " />
               </div>
@@ -329,9 +318,22 @@ function App() {
 
         {/* Media Player / Image Viewer */}
         {currentItem && (
-          <div className={`w-full h-full relative flex items-center justify-center bg-black transition-all duration-300 ${filmstripVisible ? 'pb-0' : 'pb-0'}`}>
+          <div
+            className="w-full h-full relative flex items-center justify-center bg-black transition-all duration-300"
+            style={{ paddingBottom: filmstripVisible ? '180px' : '48px' }}
+          >
             {currentItem.type === 'video' ? (
               <>
+                {/* 
+                <CustomPlayer
+                  playerRef={player}
+                  src={getMediaUrl(currentItem.path)}
+                  title={currentItem.name}
+                  onEnd={onVideoEnd}
+                  key={currentItem.path}
+                  filmstripVisible={filmstripVisible}
+                /> 
+                */}
                 <MediaPlayer
                   ref={player}
                   src={getMediaUrl(currentItem.path)}
@@ -363,7 +365,7 @@ function App() {
       </div>
 
       {/* Bottom Section: Filmstrip + Footer */}
-      <div className="flex flex-col w-full z-50">
+      <div className="absolute bottom-0 left-0 w-full z-50 flex flex-col transition-all duration-300">
         <Filmstrip
           items={playlist}
           currentIndex={currentIndex}

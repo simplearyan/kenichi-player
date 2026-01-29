@@ -44,6 +44,37 @@
   display: none;
 }
 
+/* Vidstack Custom Primitives Sync Fix */
+/* These map Vidstack's internal CSS variables to our custom UI elements */
+[data-media-player] {
+  --media-brand: var(--color-brand-yellow);
+}
+
+/* Simple Slider Synchronization for Primitives */
+[data-media-slider] [data-part="track"] {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-media-slider] [data-part="track-fill"] {
+  background-color: var(--media-brand, #facc15);
+  width: var(--slider-fill);
+}
+
+[data-media-slider] [data-part="progress-fill"] {
+  background-color: rgba(255, 255, 255, 0.15);
+  width: var(--slider-progress);
+}
+
+[data-media-slider] [data-part="thumb"] {
+  left: var(--slider-fill);
+  transform: translateX(-50%);
+}
+
+/* Specific color for Volume Slider */
+[data-media-volume-slider] [data-part="track-fill"] {
+  background-color: white;
+}
+
 body {
   background-color: var(--color-pro-950);
   color: white;

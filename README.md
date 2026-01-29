@@ -32,7 +32,7 @@ Kenichi Lite is a high-performance video player that mimics the simplicity of VL
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/KenichiLite.git
+    git clone https://github.com/simplearyan/KenichiLite.git
     cd KenichiLite
     ```
 

@@ -2,15 +2,26 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
-  --color-primary: #eab308; /* Yellow-500 */
-  --color-surface-900: #0f0f0f;
-  --color-surface-800: #1a1a1a;
-  --color-surface-700: #262626;
+
+  /* Pro Gray Palette */
+  --color-pro-950: #0f0f10;
+  /* Deepest Background */
+  --color-pro-900: #18181b;
+  /* Surface */
+  --color-pro-800: #27272a;
+  /* Borers */
+  --color-pro-400: #a1a1aa;
+  /* Muted Text */
+
+  /* Brand Accents */
+  --color-brand-yellow: #facc15;
+  --color-brand-orange: #f97316;
 }
 
 body {
-  background-color: var(--color-surface-900);
+  background-color: var(--color-pro-950);
   color: white;
   font-family: var(--font-sans);
-  overflow: hidden; /* App-like feel */
+  overflow: hidden;
+  /* App-like feel */
 }

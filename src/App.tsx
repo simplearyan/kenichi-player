@@ -10,13 +10,12 @@ import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/layouts/audio.css";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { open } from '@tauri-apps/plugin-dialog';
+import logo from "./assets/logo.png";
 
 function App() {
   const [src, setSrc] = useState<string | null>(null);
 
   const loadFile = (path: string) => {
-    // Manually construct the URL for our custom protocol.
-    // On Windows, strict 'media://' usually fails due to WebView2 quirks unless mapped to localhost.
     // Custom Protocol 'media' -> 'http://media.localhost/path/to/file'
     const encodedPath = encodeURIComponent(path);
     setSrc(`http://media.localhost/${encodedPath}`);
@@ -54,20 +53,56 @@ function App() {
   };
 
   return (
-    <div className="h-screen w-screen bg-slate-950 flex flex-col items-center justify-center text-white overflow-hidden" data-tauri-drag-region>
+    // Main Container with Pro Gray Background
+    <div className="h-screen w-screen bg-pro-950 flex flex-col items-center justify-center text-white overflow-hidden selection:bg-brand-yellow/30" data-tauri-drag-region>
       {!src && (
-        <div className="text-center space-y-6 p-10 border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/50">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent"> Kenichi Lite </h1>
-          <p className="text-slate-400">Drag and drop a video here</p>
-          <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
-            <span>or</span>
+        <div className="relative group flex flex-col items-center justify-center space-y-8 animate-fade-in">
+
+          {/* Subtle Glow Behind */}
+          <div className="absolute -z-10 w-96 h-96 bg-brand-yellow/5 rounded-full blur-3xl opacity-50 group-hover:opacity-75 transition duration-1000"></div>
+
+          {/* Card Container */}
+          <div className="w-[480px] bg-pro-900/50 backdrop-blur-sm border border-pro-800 rounded-3xl p-10 flex flex-col items-center shadow-2xl shadow-black/50">
+
+            {/* Logo Section */}
+            <div className="mb-6 relative">
+              <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 drop-shadow-lg" />
+            </div>
+
+            {/* Typography */}
+            <h1 className="text-3xl font-extrabold tracking-tight mb-2">
+              <span className="bg-gradient-to-br from-brand-yellow to-brand-orange bg-clip-text text-transparent">
+                Kenichi
+              </span>{" "}
+              <span className="text-white">Lite</span>
+            </h1>
+            <p className="text-pro-400 text-sm mb-8 text-center leading-relaxed">
+              High-performance media playback.<br />
+              Drag and drop a file to begin.
+            </p>
+
+            {/* Action Area */}
+            <div className="w-full flex flex-col items-center gap-4">
+              <button
+                onClick={handleOpen}
+                className="group relative w-full py-3.5 px-6 rounded-xl font-bold text-pro-950 bg-gradient-to-r from-brand-yellow to-brand-orange shadow-lg shadow-brand-orange/20 hover:shadow-brand-orange/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                  Open Media File
+                </span>
+                {/* Button Shine Effect */}
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
+              </button>
+            </div>
+
           </div>
-          <button
-            onClick={handleOpen}
-            className="px-6 py-2.5 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-400 transition shadow-lg shadow-yellow-500/20 cursor-pointer"
-          >
-            Open File
-          </button>
+
+          {/* Footer / Version */}
+          <div className="text-xs text-pro-800 font-mono mt-8">
+            v0.1.0 • rust • wgpu
+          </div>
+
         </div>
       )}
 

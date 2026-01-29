@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --color-primary: #eab308; /* Yellow-500 */
+  --color-surface-900: #0f0f0f;
+  --color-surface-800: #1a1a1a;
+  --color-surface-700: #262626;
+}
+
+body {
+  background-color: var(--color-surface-900);
+  color: white;
+  font-family: var(--font-sans);
+  overflow: hidden; /* App-like feel */
+}

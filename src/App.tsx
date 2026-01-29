@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { MediaPlayer, MediaProvider } from "@vidstack/react";
+import { useEffect, useState, useRef } from "react";
+import { MediaPlayer, MediaProvider, type MediaPlayerInstance } from "@vidstack/react";
 import {
   DefaultAudioLayout,
   defaultLayoutIcons,
@@ -15,6 +15,7 @@ import TitleBar from "./components/TitleBar";
 
 function App() {
   const [src, setSrc] = useState<string | null>(null);
+  const player = useRef<MediaPlayerInstance>(null);
 
   const loadFile = (path: string) => {
     // Custom Protocol 'media' -> 'http://media.localhost/path/to/file'
@@ -30,10 +31,55 @@ function App() {
       }
     });
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!src || !player.current) return;
+
+      // Prevent default behavior for mapped keys to avoid scrolling/etc
+      if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyF", "KeyM", "KeyK"].includes(e.code)) {
+        e.preventDefault();
+      }
+
+      switch (e.code) {
+        case "Space":
+        case "KeyK":
+          if (player.current.paused) {
+            player.current.play();
+          } else {
+            player.current.pause();
+          }
+          break;
+        case "KeyF":
+          if (player.current.fullscreen) {
+            player.current.exitFullscreen();
+          } else {
+            player.current.enterFullscreen();
+          }
+          break;
+        case "KeyM":
+          player.current.muted = !player.current.muted;
+          break;
+        case "ArrowLeft":
+          player.current.currentTime = Math.max(0, player.current.currentTime - 5);
+          break;
+        case "ArrowRight":
+          player.current.currentTime = Math.min(player.current.duration, player.current.currentTime + 5);
+          break;
+        case "ArrowUp":
+          player.current.volume = Math.min(1, player.current.volume + 0.05);
+          break;
+        case "ArrowDown":
+          player.current.volume = Math.max(0, player.current.volume - 0.05);
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       unlisten.then((f) => f());
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [src]);
 
   const handleOpen = async () => {
     try {
@@ -110,6 +156,7 @@ function App() {
 
       {src && (
         <MediaPlayer
+          ref={player}
           src={src}
           viewType="video"
           streamType="on-demand"

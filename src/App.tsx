@@ -11,6 +11,7 @@ import "@vidstack/react/player/styles/default/layouts/audio.css";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { open } from '@tauri-apps/plugin-dialog';
 import logo from "./assets/logo.png";
+import TitleBar from "./components/TitleBar";
 
 function App() {
   const [src, setSrc] = useState<string | null>(null);
@@ -54,19 +55,20 @@ function App() {
 
   return (
     // Main Container with Pro Gray Background
-    <div className="h-screen w-screen bg-pro-950 flex flex-col items-center justify-center text-white overflow-hidden selection:bg-brand-yellow/30" data-tauri-drag-region>
+    <div className="h-screen w-screen bg-pro-950 flex flex-col items-center justify-center text-white overflow-hidden selection:bg-brand-yellow/30 pt-10">
+      <TitleBar />
       {!src && (
         <div className="relative group flex flex-col items-center justify-center space-y-8 animate-fade-in">
 
           {/* Subtle Glow Behind */}
-          <div className="absolute -z-10 w-96 h-96 bg-brand-yellow/5 rounded-full blur-3xl opacity-50 group-hover:opacity-75 transition duration-1000"></div>
+
 
           {/* Card Container */}
-          <div className="w-[480px] bg-pro-900/50 backdrop-blur-sm border border-pro-800 rounded-3xl p-10 flex flex-col items-center shadow-2xl shadow-black/50">
+          <div className="w-[480px] bg-pro-900/50  border border-pro-800 rounded-3xl p-10 flex flex-col items-center ">
 
             {/* Logo Section */}
             <div className="mb-6 relative">
-              <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 drop-shadow-lg" />
+              <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 " />
             </div>
 
             {/* Typography */}
@@ -85,7 +87,7 @@ function App() {
             <div className="w-full flex flex-col items-center gap-4">
               <button
                 onClick={handleOpen}
-                className="group relative w-full py-3.5 px-6 rounded-xl font-bold text-pro-950 bg-gradient-to-r from-brand-yellow to-brand-orange shadow-lg shadow-brand-orange/20 hover:shadow-brand-orange/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden"
+                className="group relative w-full py-3.5 px-6 rounded-xl font-bold text-pro-950 bg-gradient-to-r from-brand-yellow to-brand-orange hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>

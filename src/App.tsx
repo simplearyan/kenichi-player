@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { MediaPlayer, MediaProvider, type MediaPlayerInstance } from "@vidstack/react";
+import { MediaPlayer, MediaProvider, type MediaPlayerInstance, useMediaState } from "@vidstack/react";
 import {
   DefaultAudioLayout,
   defaultLayoutIcons,
@@ -36,7 +36,7 @@ function App() {
   const currentItem = playlist[currentIndex];
 
   // Helper to create MediaItem
-  const createMediaItem = (path: string): MediaItem | null => {
+  const createMediaItem = (path: string, size?: number): MediaItem | null => {
     const name = path.split(/[\\/]/).pop() || "Unknown";
     const ext = "." + name.split('.').pop()?.toLowerCase();
 
@@ -45,7 +45,7 @@ function App() {
     if (IMAGE_EXTS.includes(ext)) type = 'image';
 
     if (!type) return null;
-    return { path, name, type };
+    return { path, name, type, size };
   };
 
   const addToPlaylist = async (paths: string[]) => {
@@ -57,17 +57,19 @@ function App() {
         if (info.isDirectory) {
           const entries = await readDir(path);
           for (const entry of entries) {
-            // entry.name is just the filename. We need full path.
-            // This is tricky cross-platform without 'path.join'.
-            // Assuming Windows for now based on user context, or simple concatenation.
-            // To be robust, we assume the separator from the parent path.
             const sep = path.includes("\\") ? "\\" : "/";
             const fullPath = `${path}${sep}${entry.name}`;
-            const item = createMediaItem(fullPath);
-            if (item) newItems.push(item);
+            try {
+              // We need to stat each file to get size, might be slow for huge folders but ok for now
+              const fileInfo = await stat(fullPath);
+              if (!fileInfo.isDirectory) {
+                const item = createMediaItem(fullPath, fileInfo.size);
+                if (item) newItems.push(item);
+              }
+            } catch (e) { console.warn("Skipping file", fullPath, e) }
           }
         } else {
-          const item = createMediaItem(path);
+          const item = createMediaItem(path, info.size);
           if (item) newItems.push(item);
         }
       } catch (err) {
@@ -89,14 +91,16 @@ function App() {
     }
   };
 
-  const loadFile = (path: string) => {
-    // Legacy support: treat single load as clearing playlist and adding one
-    // Or just append? User likely wants to "Open" -> Play this.
-    // Let's clear and add.
-    const item = createMediaItem(path);
-    if (item) {
-      setPlaylist([item]);
-      setCurrentIndex(0);
+  const loadFile = async (path: string) => {
+    try {
+      const info = await stat(path);
+      const item = createMediaItem(path, info.size);
+      if (item) {
+        setPlaylist([item]);
+        setCurrentIndex(0);
+      }
+    } catch (e) {
+      console.error("Failed to load file", e);
     }
   };
 
@@ -209,6 +213,30 @@ function App() {
     }
   };
 
+  const [metaInfo, setMetaInfo] = useState("");
+
+  const formatSize = (bytes?: number) => {
+    if (!bytes) return "";
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(1)}MB`;
+  };
+
+  // Reset meta on change
+  useEffect(() => {
+    // Always show size initially if available
+    setMetaInfo(formatSize(currentItem?.size));
+
+    if (currentItem?.type === 'image') {
+      const img = new Image();
+      img.onload = () => {
+        const res = `${img.width} x ${img.height}`;
+        const size = formatSize(currentItem.size);
+        setMetaInfo([res, size].filter(Boolean).join(" • "));
+      };
+      img.src = getMediaUrl(currentItem.path);
+    }
+  }, [currentItem]);
+
   return (
     <div className="h-screen w-screen bg-pro-950 flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30">
       <TitleBar />
@@ -275,6 +303,7 @@ function App() {
                 className="w-full h-full object-contain ring-0 outline-none"
                 autoPlay
                 onEnd={onVideoEnd}
+                onLoadedMetadata={onLoadedMetadata}
                 key={currentItem.path} // Force re-mount on change usually good for clean state, or rely on src change
               >
                 <MediaProvider />
@@ -308,7 +337,7 @@ function App() {
 
         <Footer
           fileName={currentItem?.name || "No media"}
-          fileInfo={playlist.length > 0 ? `${currentIndex + 1} / ${playlist.length}` : ""}
+          fileInfo={metaInfo || (playlist.length > 0 ? `${currentIndex + 1} / ${playlist.length}` : "")}
           filmstripVisible={filmstripVisible}
           onToggleFilmstrip={() => setFilmstripVisible(v => !v)}
           autoAdvance={autoAdvance}

@@ -7,6 +7,7 @@ export interface MediaItem {
     name: string;
     type: 'video' | 'image';
     thumbnail?: string;
+    size?: number; // bytes
 }
 
 interface FilmstripProps {
@@ -40,11 +41,11 @@ export default function Filmstrip({ items, currentIndex, onSelect, onRemove, vis
                     const isActive = index === currentIndex;
                     return (
                         <div
-                            key={`${item.path}-${index}`}
+                            key={`${item.path} -${index} `}
                             onClick={() => onSelect(index)}
                             className={`group relative w-36 h-[88px] rounded-lg overflow-hidden cursor-pointer flex-shrink-0 border-2 transition-all duration-200 ${isActive
-                                ? "border-brand-orange scale-100 z-10"
-                                : "border-transparent opacity-60 hover:opacity-100 hover:bg-white/5"
+                                    ? "border-brand-orange scale-100 z-10"
+                                    : "border-transparent opacity-60 hover:opacity-100"
                                 }`}
                         >
                             {/* Placeholder / Thumbnail */}

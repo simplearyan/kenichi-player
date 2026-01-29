@@ -19,7 +19,7 @@ export default function Footer({ fileName, fileInfo, filmstripVisible, onToggleF
                     onClick={onToggleFilmstrip}
                     className={`p-2 rounded-lg transition-colors ${filmstripVisible
                             ? "text-brand-yellow bg-brand-yellow/10"
-                            : "text-pro-400 hover:text-white hover:bg-white/10"
+                            : "text-pro-400 "
                         }`}
                     title={filmstripVisible ? "Hide Filmstrip" : "Show Filmstrip"}
                 >
@@ -32,7 +32,7 @@ export default function Footer({ fileName, fileInfo, filmstripVisible, onToggleF
                     onClick={onToggleAutoAdvance}
                     className={`p-2 rounded-lg transition-colors ${autoAdvance
                             ? "text-brand-orange bg-brand-orange/10"
-                            : "text-pro-400 hover:text-white hover:bg-white/10"
+                            : "text-pro-400"
                         }`}
                     title={autoAdvance ? "Auto-Advance: ON" : "Auto-Advance: OFF"}
                 >

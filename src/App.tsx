@@ -17,7 +17,8 @@ import { basename, extname } from "@tauri-apps/api/path"; // We might need to ha
 import logo from "./assets/logo.png";
 import TitleBar from "./components/TitleBar";
 import Filmstrip, { MediaItem } from "./components/Filmstrip";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import NavigationArrows from "./components/NavigationArrows";
+import Footer from "./components/Footer";
 
 // Helper to check extensions
 const VIDEO_EXTS = ['.mp4', '.mkv', '.webm', '.mov', '.avi'];
@@ -28,6 +29,7 @@ function App() {
   const [playlist, setPlaylist] = useState<MediaItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filmstripVisible, setFilmstripVisible] = useState(true);
+  const [autoAdvance, setAutoAdvance] = useState(true);
 
   const player = useRef<MediaPlayerInstance>(null);
 
@@ -201,105 +203,118 @@ function App() {
   };
 
   const onVideoEnd = () => {
-    // Auto-advance
-    if (currentIndex < playlist.length - 1) {
+    // Auto-advance only if enabled
+    if (autoAdvance && currentIndex < playlist.length - 1) {
       setCurrentIndex(c => c + 1);
     }
   };
 
   return (
-    <div className="h-screen w-screen bg-pro-950 flex flex-col items-center justify-center text-white overflow-hidden selection:bg-brand-yellow/30 pt-10">
+    <div className="h-screen w-screen bg-pro-950 flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30">
       <TitleBar />
 
-      {/* Empty State */}
-      {playlist.length === 0 && (
-        <div className="relative group flex flex-col items-center justify-center space-y-8 animate-fade-in">
-          {/* Card Container */}
-          <div className="w-[480px] bg-pro-900/50  border border-pro-800 rounded-3xl p-10 flex flex-col items-center ">
-            <div className="mb-6 relative">
-              <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 " />
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-              <span className="bg-gradient-to-br from-brand-yellow to-brand-orange bg-clip-text text-transparent">Kenichi</span>{" "}
-              <span className="text-white">Lite</span>
-            </h1>
-            <p className="text-pro-400 text-sm mb-8 text-center leading-relaxed">
-              High-performance media playback.<br />
-              Drag and drop folders or files.
-            </p>
-            <div className="w-full flex flex-col items-center gap-4">
-              <button
-                onClick={handleOpen}
-                className="group relative w-full py-3.5 px-6 rounded-xl font-bold text-pro-950 bg-gradient-to-r from-brand-yellow to-brand-orange hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
-                  Open Media
-                </span>
-                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
-              </button>
-            </div>
-          </div>
-          <div className="text-xs text-pro-800 font-mono mt-8">v0.1.0 • rust • wgpu</div>
-        </div>
-      )}
+      {/* Main Content Area (Flex Grow) */}
+      <div className="flex-1 relative w-full overflow-hidden flex flex-col group">
 
-      {/* Media Player / Image Viewer */}
-      {currentItem && (
-        <div className="w-full h-full relative flex items-center justify-center bg-black">
-          {currentItem.type === 'video' ? (
-            <MediaPlayer
-              ref={player}
-              src={getMediaUrl(currentItem.path)}
-              viewType="video"
-              streamType="on-demand"
-              logLevel="warn"
-              crossOrigin
-              playsInline
-              title={currentItem.name}
-              className="w-full h-full object-contain ring-0 outline-none"
-              autoPlay
-              onEnd={onVideoEnd}
-              key={currentItem.path} // Force re-mount on change usually good for clean state, or rely on src change
-            >
-              <MediaProvider />
-              <DefaultAudioLayout icons={defaultLayoutIcons} />
-              <DefaultVideoLayout icons={defaultLayoutIcons} />
-            </MediaPlayer>
-          ) : (
-            <img
-              src={getMediaUrl(currentItem.path)}
-              alt={currentItem.name}
-              className="w-full h-full object-contain animate-fade-in"
-            />
-          )}
-        </div>
-      )}
-
-      {/* Filmstrip */}
-      {playlist.length > 0 && (
-        <>
-          <Filmstrip
-            items={playlist}
-            currentIndex={currentIndex}
-            onSelect={setCurrentIndex}
-            onRemove={(idx) => {
-              const newPlaylist = playlist.filter((_, i) => i !== idx);
-              setPlaylist(newPlaylist);
-              if (currentIndex >= newPlaylist.length) setCurrentIndex(Math.max(0, newPlaylist.length - 1));
-            }}
-            visible={filmstripVisible}
+        {/* Navigation Arrows */}
+        {playlist.length > 1 && (
+          <NavigationArrows
+            hasPrev={currentIndex > 0}
+            hasNext={currentIndex < playlist.length - 1}
+            onPrev={() => setCurrentIndex(c => Math.max(0, c - 1))}
+            onNext={() => setCurrentIndex(c => Math.min(playlist.length - 1, c + 1))}
           />
-          {/* Toggle Button */}
-          <button
-            onClick={() => setFilmstripVisible(v => !v)}
-            className="fixed bottom-2 right-2 p-2 bg-pro-900/50 hover:bg-pro-800 text-pro-400 rounded-lg hover:text-white transition-colors z-50 focus:outline-none"
-            title="Toggle Filmstrip (T)"
-          >
-            {filmstripVisible ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
-          </button>
-        </>
-      )}
+        )}
+
+        {/* Empty State */}
+        {playlist.length === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-fade-in pt-10">
+            {/* Card Container */}
+            <div className="w-[480px] bg-pro-900/50  border border-pro-800 rounded-3xl p-10 flex flex-col items-center ">
+              <div className="mb-6 relative">
+                <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 " />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-2">
+                <span className="bg-gradient-to-br from-brand-yellow to-brand-orange bg-clip-text text-transparent">Kenichi</span>{" "}
+                <span className="text-white">Lite</span>
+              </h1>
+              <p className="text-pro-400 text-sm mb-8 text-center leading-relaxed">
+                High-performance media playback.<br />
+                Drag and drop folders or files.
+              </p>
+              <div className="w-full flex flex-col items-center gap-4">
+                <button
+                  onClick={handleOpen}
+                  className="group relative w-full py-3.5 px-6 rounded-xl font-bold text-pro-950 bg-gradient-to-r from-brand-yellow to-brand-orange hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                    Open Media
+                  </span>
+                  <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
+                </button>
+              </div>
+            </div>
+            <div className="text-xs text-pro-800 font-mono mt-8">v0.1.0 • rust • wgpu</div>
+          </div>
+        )}
+
+        {/* Media Player / Image Viewer */}
+        {currentItem && (
+          <div className={`w-full h-full relative flex items-center justify-center bg-black transition-all duration-300 ${filmstripVisible ? 'pb-0' : 'pb-0'}`}>
+            {currentItem.type === 'video' ? (
+              <MediaPlayer
+                ref={player}
+                src={getMediaUrl(currentItem.path)}
+                viewType="video"
+                streamType="on-demand"
+                logLevel="warn"
+                crossOrigin
+                playsInline
+                title={currentItem.name}
+                className="w-full h-full object-contain ring-0 outline-none"
+                autoPlay
+                onEnd={onVideoEnd}
+                key={currentItem.path} // Force re-mount on change usually good for clean state, or rely on src change
+              >
+                <MediaProvider />
+                <DefaultAudioLayout icons={defaultLayoutIcons} />
+                <DefaultVideoLayout icons={defaultLayoutIcons} />
+              </MediaPlayer>
+            ) : (
+              <img
+                src={getMediaUrl(currentItem.path)}
+                alt={currentItem.name}
+                className="w-full h-full object-contain animate-fade-in"
+              />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Section: Filmstrip + Footer */}
+      <div className="flex flex-col w-full z-50">
+        <Filmstrip
+          items={playlist}
+          currentIndex={currentIndex}
+          onSelect={setCurrentIndex}
+          onRemove={(idx) => {
+            const newPlaylist = playlist.filter((_, i) => i !== idx);
+            setPlaylist(newPlaylist);
+            if (currentIndex >= newPlaylist.length) setCurrentIndex(Math.max(0, newPlaylist.length - 1));
+          }}
+          visible={filmstripVisible}
+        />
+
+        <Footer
+          fileName={currentItem?.name || "No media"}
+          fileInfo={playlist.length > 0 ? `${currentIndex + 1} / ${playlist.length}` : ""}
+          filmstripVisible={filmstripVisible}
+          onToggleFilmstrip={() => setFilmstripVisible(v => !v)}
+          autoAdvance={autoAdvance}
+          onToggleAutoAdvance={() => setAutoAdvance(v => !v)}
+        />
+      </div>
     </div>
   );
 }

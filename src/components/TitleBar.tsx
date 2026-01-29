@@ -36,7 +36,7 @@ export default function TitleBar() {
     const close = () => appWindow.close();
 
     return (
-        <div className="h-10 bg-pro-950 flex justify-between items-center select-none fixed top-0 left-0 right-0 z-50 border-b border-pro-800">
+        <div className="h-10 bg-pro-950 flex justify-between items-center select-none fixed top-0 left-0 right-0 z-50">
             {/* Drag Region covering the left side and center */}
             <div className="flex-1 h-full flex items-center pl-4 gap-3" data-tauri-drag-region>
                 <img src={logo} alt="Logo" className="w-5 h-5 opacity-80 pointer-events-none" />

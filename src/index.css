@@ -18,6 +18,31 @@
   --color-brand-orange: #f97316;
 }
 
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-pro-800);
+  border-radius: 9999px;
+  border: 2px solid var(--color-pro-950);
+  /* Creates padding effect */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-pro-400);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: var(--color-pro-950);
   color: white;

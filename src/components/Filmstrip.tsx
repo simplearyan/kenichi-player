@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
 import { X, Play, Image as ImageIcon, Film } from "lucide-react";
-import { MediaItem } from "./Filmstrip"; // Self-reference export helper if needed, but usually we export interface from here.
 
 export interface MediaItem {
     path: string;
@@ -44,8 +43,8 @@ export default function Filmstrip({ items, currentIndex, onSelect, onRemove, vis
                             key={`${item.path} -${index} `}
                             onClick={() => onSelect(index)}
                             className={`group relative w-36 h-[88px] rounded-lg overflow-hidden cursor-pointer flex-shrink-0 border-2 transition-all duration-200 ${isActive
-                                    ? "border-brand-orange scale-100 z-10"
-                                    : "border-transparent opacity-60 hover:opacity-100"
+                                ? "border-brand-orange scale-100 z-10"
+                                : "border-transparent opacity-60 hover:opacity-100"
                                 }`}
                         >
                             {/* Placeholder / Thumbnail */}

@@ -30,6 +30,7 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filmstripVisible, setFilmstripVisible] = useState(true);
   const [autoAdvance, setAutoAdvance] = useState(true);
+  const [metaInfo, setMetaInfo] = useState("");
 
   const player = useRef<MediaPlayerInstance>(null);
 
@@ -110,6 +111,66 @@ function App() {
     return `http://media.localhost/${encodedPath}`;
   };
 
+  const formatSize = (bytes?: number) => {
+    if (!bytes) return "";
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(1)}MB`;
+  };
+
+  const formatTime = (time: number) => {
+    if (!time || isNaN(time)) return "";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  // Metadata & Player Subscription Effect
+  useEffect(() => {
+    // 1. Initial Reset / Size only
+    const sizeStr = formatSize(currentItem?.size);
+    setMetaInfo(sizeStr || "");
+
+    // 2. Image Handling
+    if (currentItem?.type === 'image') {
+      const img = new Image();
+      img.onload = () => {
+        const parts = [`${img.width} x ${img.height}`];
+        if (sizeStr) parts.push(sizeStr);
+        setMetaInfo(parts.join(" • "));
+      };
+      img.src = getMediaUrl(currentItem.path);
+    }
+
+    // 3. Video Handling via Vidstack Store Subscription
+    // We delay slightly to ensure ref is attached if switching from image -> video
+    let unsubscribe: (() => void) | undefined;
+
+    if (currentItem?.type === 'video') {
+      // Small timeout to allow React to ref the player after render
+      setTimeout(() => {
+        if (player.current) {
+          unsubscribe = player.current.subscribe(({ videoWidth, videoHeight, duration }) => {
+            const parts: string[] = [];
+            if (videoWidth && videoHeight) parts.push(`${videoWidth} x ${videoHeight}`);
+            if (sizeStr) parts.push(sizeStr);
+            if (duration > 0) parts.push(formatTime(duration));
+
+            // Update state - debouncing might be nice but simple string compare avoids loops usually
+            setMetaInfo(prev => {
+              const newValue = parts.join(" • ");
+              return prev === newValue ? prev : newValue;
+            });
+          });
+        }
+      }, 50);
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [currentItem]);
+
+
   useEffect(() => {
     const unlisten = getCurrentWebview().onDragDropEvent((event) => {
       if (event.payload.type === "drop") {
@@ -119,7 +180,7 @@ function App() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Allow some keys even if no media, but mostly we need media
-      if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyF", "KeyM", "KeyK", "KeyN", "KeyP", "KeyT"].includes(e.code)) {
+      if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyF", "KeyM", "KeyK", "KeyN", "KeyP", "KeyT", "PageDown", "PageUp"].includes(e.code)) {
         // Don't prevent default always, inputs might need it, but we have no inputs.
       }
 
@@ -135,6 +196,7 @@ function App() {
         case "KeyF":
           e.preventDefault();
           if (currentItem?.type === 'video' && player.current) {
+            // @ts-ignore - property exists on instance
             if (player.current.fullscreen) player.current.exitFullscreen();
             else player.current.enterFullscreen();
           }
@@ -164,9 +226,11 @@ function App() {
           }
           break;
         case "KeyN": // Next Track
+        case "PageDown":
           if (currentIndex < playlist.length - 1) setCurrentIndex(c => c + 1);
           break;
         case "KeyP": // Prev Track
+        case "PageUp":
           if (currentIndex > 0) setCurrentIndex(c => c - 1);
           break;
 
@@ -212,30 +276,6 @@ function App() {
       setCurrentIndex(c => c + 1);
     }
   };
-
-  const [metaInfo, setMetaInfo] = useState("");
-
-  const formatSize = (bytes?: number) => {
-    if (!bytes) return "";
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(1)}MB`;
-  };
-
-  // Reset meta on change
-  useEffect(() => {
-    // Always show size initially if available
-    setMetaInfo(formatSize(currentItem?.size));
-
-    if (currentItem?.type === 'image') {
-      const img = new Image();
-      img.onload = () => {
-        const res = `${img.width} x ${img.height}`;
-        const size = formatSize(currentItem.size);
-        setMetaInfo([res, size].filter(Boolean).join(" • "));
-      };
-      img.src = getMediaUrl(currentItem.path);
-    }
-  }, [currentItem]);
 
   return (
     <div className="h-screen w-screen bg-pro-950 flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30">
@@ -291,25 +331,26 @@ function App() {
         {currentItem && (
           <div className={`w-full h-full relative flex items-center justify-center bg-black transition-all duration-300 ${filmstripVisible ? 'pb-0' : 'pb-0'}`}>
             {currentItem.type === 'video' ? (
-              <MediaPlayer
-                ref={player}
-                src={getMediaUrl(currentItem.path)}
-                viewType="video"
-                streamType="on-demand"
-                logLevel="warn"
-                crossOrigin
-                playsInline
-                title={currentItem.name}
-                className="w-full h-full object-contain ring-0 outline-none"
-                autoPlay
-                onEnd={onVideoEnd}
-                onLoadedMetadata={onLoadedMetadata}
-                key={currentItem.path} // Force re-mount on change usually good for clean state, or rely on src change
-              >
-                <MediaProvider />
-                <DefaultAudioLayout icons={defaultLayoutIcons} />
-                <DefaultVideoLayout icons={defaultLayoutIcons} />
-              </MediaPlayer>
+              <>
+                <MediaPlayer
+                  ref={player}
+                  src={getMediaUrl(currentItem.path)}
+                  viewType="video"
+                  streamType="on-demand"
+                  logLevel="warn"
+                  crossOrigin
+                  playsInline
+                  title={currentItem.name}
+                  className="w-full h-full object-contain ring-0 outline-none"
+                  autoPlay
+                  onEnd={onVideoEnd}
+                  key={currentItem.path}
+                >
+                  <MediaProvider />
+                  <DefaultAudioLayout icons={defaultLayoutIcons} />
+                  <DefaultVideoLayout icons={defaultLayoutIcons} />
+                </MediaPlayer>
+              </>
             ) : (
               <img
                 src={getMediaUrl(currentItem.path)}

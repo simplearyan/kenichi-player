@@ -27,15 +27,15 @@ export default function Filmstrip({ items, currentIndex, onSelect, onRemove, vis
 
     return (
         // Docked at bottom, full width container
-        <div className="w-full bg-zinc-950/20 backdrop-blur-lg border-t border-white/5 p-4 animate-slide-up z-40 relative">
-            <div className="flex items-center justify-center gap-3 overflow-x-auto custom-scrollbar scroll-smooth pb-0" ref={scrollRef}>
+        <div className="w-full bg-zinc-950/20 backdrop-blur-lg border-t border-white/5 p-2 animate-slide-up z-40 relative">
+            <div className="flex items-center justify-center gap-1.5 overflow-x-auto custom-scrollbar scroll-smooth pb-0" ref={scrollRef}>
                 {items.map((item, index) => {
                     const isActive = index === currentIndex;
                     return (
                         <div
                             key={`${item.path} -${index} `}
                             onClick={() => onSelect(index)}
-                            className={`group relative w-36 h-[88px] rounded-lg overflow-hidden cursor-pointer flex-shrink-0 border-2 transition-all duration-200 ${isActive
+                            className={`group relative w-16 h-16 rounded-md overflow-hidden cursor-pointer flex-shrink-0 border-2 transition-all duration-200 ${isActive
                                 ? "border-brand-orange scale-100 z-10"
                                 : "border-transparent opacity-60 hover:opacity-100"
                                 }`}
@@ -51,10 +51,10 @@ export default function Filmstrip({ items, currentIndex, onSelect, onRemove, vis
                                 })()}
                             </div>
 
-                            {/* Label Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex flex-col justify-end p-2">
+                            {/* Label Overlay (Hidden for small square cards) */}
+                            {/* <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex flex-col justify-end p-2">
                                 <p className="text-[10px] text-white/90 font-medium truncate w-full">{item.name}</p>
-                            </div>
+                            </div> */}
 
                             {/* Active Indicator (Play Icon) */}
                             {isActive && item.type === 'video' && (

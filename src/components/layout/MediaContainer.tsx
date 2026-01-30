@@ -29,7 +29,7 @@ export default function MediaContainer({
         <div
             className="w-full h-full relative flex items-center justify-center bg-transparent transition-all duration-300"
             style={{
-                paddingBottom: filmstripVisible ? '184px' : '64px',
+                paddingBottom: filmstripVisible ? '132px' : '64px',
                 paddingTop: '48px'
             }}
         >

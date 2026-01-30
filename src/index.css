@@ -14,9 +14,11 @@
   --color-pro-400: #a1a1aa;
   /* Muted Text */
 
-  /* Brand Accents */
-  --color-brand-yellow: #facc15;
-  --color-brand-orange: #f97316;
+  /* Brand Accents (Updated to Cool Tones) */
+  --color-brand-yellow: #38bdf8;
+  /* Mapping 'yellow' var to Sky 400 */
+  --color-brand-orange: #818cf8;
+  /* Mapping 'orange' var to Indigo 400 */
 }
 
 /* Custom Scrollbar */
@@ -48,11 +50,15 @@
 /* These map Vidstack's internal CSS variables to our custom UI elements */
 
 [data-media-player][data-layout='video']:not([data-fullscreen]) {
-    border: none !important;
+  border: none !important;
 }
 
 [data-media-player][data-layout='video'] {
-    background-color: #131313 !important;
+  /* background-color: #131313 !important; */
+  /* background-color: transparent !important; */
+
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 [data-media-player] {

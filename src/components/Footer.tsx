@@ -1,4 +1,4 @@
-import { Film, LayoutGrid, Heart, Info, ZoomIn, ZoomOut } from "lucide-react";
+import { Film, LayoutGrid, Heart, Info, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
 
 interface FooterProps {
     fileInfo?: string;
@@ -6,11 +6,21 @@ interface FooterProps {
     onToggleFilmstrip: () => void;
     autoAdvance: boolean;
     onToggleAutoAdvance: () => void;
+    autoHideControls: boolean;
+    onToggleAutoHide: () => void;
 }
 
-export default function Footer({ fileInfo, filmstripVisible, onToggleFilmstrip, autoAdvance, onToggleAutoAdvance }: FooterProps) {
+export default function Footer({
+    fileInfo,
+    filmstripVisible,
+    onToggleFilmstrip,
+    autoAdvance,
+    onToggleAutoAdvance,
+    autoHideControls,
+    onToggleAutoHide
+}: FooterProps) {
     return (
-        <div className="h-16 bg-pro-950/80 backdrop-blur-md flex items-center justify-between px-6 select-none z-50 transition-all duration-300  w-full">
+        <div className="h-16 bg-zinc-950/30 backdrop-blur-2xl flex items-center justify-between px-6 select-none z-50 transition-all duration-300 w-full bg-gradient-to-t from-white/5 to-transparent">
             {/* Left Section: Quick Actions */}
             <div className="flex items-center gap-2">
                 <div className="flex items-center bg-pro-800/50 rounded-lg p-1 gap-1 border border-white/5">
@@ -34,6 +44,17 @@ export default function Footer({ fileInfo, filmstripVisible, onToggleFilmstrip, 
                         title={autoAdvance ? "Auto-Advance: ON" : "Auto-Advance: OFF"}
                     >
                         <Film size={18} />
+                    </button>
+
+                    <button
+                        onClick={onToggleAutoHide}
+                        className={`p-2 rounded-md transition-colors ${autoHideControls
+                            ? "bg-white/10 text-brand-yellow shadow-sm"
+                            : "text-pro-400 hover:text-white hover:bg-white/5"
+                            }`}
+                        title={autoHideControls ? "Controls: Hover Only" : "Controls: Always Visible"}
+                    >
+                        {autoHideControls ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
 

@@ -11,6 +11,7 @@ interface MediaContainerProps {
     filmstripVisible: boolean;
     onVideoEnd: () => void;
     setMetaInfo: (info: string) => void;
+    autoHideControls: boolean;
 }
 
 export default function MediaContainer({
@@ -18,11 +19,12 @@ export default function MediaContainer({
     playerRef,
     filmstripVisible,
     onVideoEnd,
-    setMetaInfo
+    setMetaInfo,
+    autoHideControls
 }: MediaContainerProps) {
     return (
         <div
-            className="w-full h-full relative flex items-center justify-center bg-black transition-all duration-300"
+            className="w-full h-full relative flex items-center justify-center bg-transparent transition-all duration-300"
             style={{
                 paddingBottom: filmstripVisible ? '184px' : '64px',
                 paddingTop: '48px'
@@ -45,7 +47,7 @@ export default function MediaContainer({
                     preload="auto"
                 >
                     <MediaProvider />
-                    <CustomVideoLayout />
+                    <CustomVideoLayout autoHideControls={autoHideControls} />
                 </MediaPlayer>
             ) : (
                 <img

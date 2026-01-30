@@ -19,10 +19,11 @@ import {
     MinimizeIcon,
 } from "lucide-react";
 
-export default function CustomVideoLayout() {
+export default function CustomVideoLayout({ autoHideControls }: { autoHideControls: boolean }) {
     const isPaused = useMediaState("paused");
     const isMuted = useMediaState("muted");
     const isFullscreen = useMediaState("fullscreen");
+    const isBuffering = useMediaState("waiting");
 
     return (
         <>
@@ -39,8 +40,16 @@ export default function CustomVideoLayout() {
 
             <Controls.Root className="absolute inset-0 z-10 flex h-full w-full flex-col justify-end pointer-events-none">
 
+                {/* Custom Loading Spinner (Subtle) */}
+                {isBuffering && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-[1px] animate-in fade-in duration-200">
+                        <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-white/80 animate-spin"></div>
+                    </div>
+                )}
+
                 {/* Floating Control Bar */}
-                <Controls.Group className="pointer-events-auto mx-auto mb-8 flex w-fit items-center gap-4 rounded-full bg-black/60 backdrop-blur-md px-6 py-3 shadow-2xl transition-opacity animate-in fade-in slide-in-from-bottom-4 border border-white/10">
+                <Controls.Group className={`pointer-events-auto mx-auto mb-8 flex w-fit items-center gap-4 rounded-full bg-zinc-900/85 backdrop-blur-xl px-6 py-3 shadow-2xl transition-all duration-300 hover:bg-zinc-900/95 border border-white/10 ${autoHideControls ? 'opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0' : 'opacity-100'
+                    }`}>
 
                     {/* Play/Pause */}
                     <PlayButton className="group ring-media-focus relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full outline-none hover:bg-white/20 transition-colors">

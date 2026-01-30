@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { MediaPlayerInstance } from "@vidstack/react";
 import { open } from '@tauri-apps/plugin-dialog';
 
@@ -31,6 +31,9 @@ function App() {
     addToPlaylist,
     onVideoEnd
   } = usePlaylist();
+
+  // Settings
+  const [autoHideControls, setAutoHideControls] = useState(true);
 
   const player = useRef<MediaPlayerInstance>(null);
 
@@ -70,7 +73,16 @@ function App() {
   };
 
   return (
-    <div className="h-screen w-screen bg-pro-950 flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30">
+    <div
+      className="h-screen w-screen flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30"
+      style={{
+        background: `
+          radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.2), transparent 40%), 
+          radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 40%), 
+          radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.1), transparent 60%),
+          #09090b`
+      }}
+    >
       <TitleBar
         filename={currentItem?.name}
         mediaType={currentItem?.type}
@@ -100,6 +112,7 @@ function App() {
             filmstripVisible={filmstripVisible}
             onVideoEnd={onVideoEnd}
             setMetaInfo={setMetaInfo}
+            autoHideControls={autoHideControls}
           />
         )}
       </div>
@@ -136,6 +149,8 @@ function App() {
           onToggleFilmstrip={() => setFilmstripVisible(!filmstripVisible)}
           autoAdvance={autoAdvance}
           onToggleAutoAdvance={() => setAutoAdvance(!autoAdvance)}
+          autoHideControls={autoHideControls}
+          onToggleAutoHide={() => setAutoHideControls(!autoHideControls)}
         />
       </div>
     </div>

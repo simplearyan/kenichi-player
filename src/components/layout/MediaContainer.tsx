@@ -1,9 +1,5 @@
 import { MediaPlayer, MediaProvider, type MediaPlayerInstance } from "@vidstack/react";
-import {
-    DefaultAudioLayout,
-    defaultLayoutIcons,
-    DefaultVideoLayout,
-} from "@vidstack/react/player/layouts/default";
+import CustomVideoLayout from "../player/CustomVideoLayout";
 import { RefObject } from "react";
 import { MediaItem } from "../../types";
 import { getMediaUrl } from "../../utils/file";
@@ -49,8 +45,7 @@ export default function MediaContainer({
                     preload="auto"
                 >
                     <MediaProvider />
-                    <DefaultAudioLayout icons={defaultLayoutIcons} />
-                    <DefaultVideoLayout icons={defaultLayoutIcons} />
+                    <CustomVideoLayout />
                 </MediaPlayer>
             ) : (
                 <img

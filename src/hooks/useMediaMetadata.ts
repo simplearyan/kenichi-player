@@ -29,8 +29,7 @@ export function useMediaMetadata(currentItem?: MediaItem, player?: RefObject<Med
         if (currentItem?.type === 'video' && player) {
             setTimeout(() => {
                 if (player.current) {
-                    unsubscribe = player.current.subscribe((state: any) => {
-                        const { videoWidth, videoHeight, duration } = state;
+                    unsubscribe = player.current.subscribe(({ videoWidth, videoHeight, duration }) => {
                         const parts: string[] = [];
                         if (videoWidth && videoHeight) parts.push(`${videoWidth} x ${videoHeight}`);
                         if (sizeStr) parts.push(sizeStr);

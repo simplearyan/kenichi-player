@@ -37,6 +37,18 @@ function App() {
   const [autoHideControls, setAutoHideControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // Image Zoom State
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  // Reset zoom when item changes
+  useEffect(() => {
+    setZoomLevel(1);
+  }, [currentItem?.path]);
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.5, 5));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.5, 0.1));
+  const handleZoomChange = (value: number) => setZoomLevel(value);
+
   // Sync isFullscreen state with window
   useEffect(() => {
     const checkFullscreen = async () => {
@@ -140,6 +152,8 @@ function App() {
             onVideoEnd={onVideoEnd}
             setMetaInfo={setMetaInfo}
             autoHideControls={autoHideControls}
+            zoomLevel={zoomLevel}
+            setZoomLevel={setZoomLevel}
           />
         )}
       </div>
@@ -179,6 +193,10 @@ function App() {
           autoHideControls={autoHideControls}
           onToggleAutoHide={() => setAutoHideControls(!autoHideControls)}
           onToggleFullscreen={handleToggleFullscreen}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          zoomLevel={zoomLevel}
+          onZoomChange={handleZoomChange}
         />
       </div>
     </div>

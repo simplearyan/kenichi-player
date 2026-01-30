@@ -29,7 +29,7 @@ interface CustomPlayerProps {
 export default function CustomPlayer({ playerRef, src, title, onEnd, filmstripVisible }: CustomPlayerProps) {
     const isPaused = useMediaState('paused', playerRef);
     const isMuted = useMediaState('muted', playerRef);
-    const bottomOffset = filmstripVisible ? 176 : 56;
+    const bottomOffset = filmstripVisible ? 184 : 64;
     return (
         <MediaPlayer
             ref={playerRef}

@@ -46,6 +46,15 @@
 
 /* Vidstack Custom Primitives Sync Fix */
 /* These map Vidstack's internal CSS variables to our custom UI elements */
+
+[data-media-player][data-layout='video']:not([data-fullscreen]) {
+    border: none !important;
+}
+
+[data-media-player][data-layout='video'] {
+    background-color: #131313 !important;
+}
+
 [data-media-player] {
   --media-brand: var(--color-brand-yellow);
 }

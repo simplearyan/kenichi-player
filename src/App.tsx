@@ -19,7 +19,7 @@ import TitleBar from "./components/TitleBar";
 import Filmstrip, { MediaItem } from "./components/Filmstrip";
 import NavigationArrows from "./components/NavigationArrows";
 import Footer from "./components/Footer";
-import CustomPlayer from "./components/CustomPlayer";
+// import CustomPlayer from "./components/CustomPlayer";
 
 // Helper to check extensions
 const VIDEO_EXTS = ['.mp4', '.mkv', '.webm', '.mov', '.avi'];
@@ -101,8 +101,14 @@ function App() {
 
   const formatSize = (bytes?: number) => {
     if (!bytes) return "";
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(1)}MB`;
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let size = bytes;
+    let unitIndex = 0;
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024;
+      unitIndex++;
+    }
+    return `${size.toFixed(1)} ${units[unitIndex]}`;
   };
 
   const formatTime = (time: number) => {
@@ -283,7 +289,10 @@ function App() {
 
   return (
     <div className="h-screen w-screen bg-pro-950 flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30">
-      <TitleBar />
+      <TitleBar
+        filename={currentItem?.name}
+        mediaType={currentItem?.type}
+      />
 
       {/* Main Content Area (Flex Grow) */}
       <div className="flex-1 relative w-full overflow-hidden flex flex-col group">
@@ -302,7 +311,7 @@ function App() {
         {playlist.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-fade-in pt-10">
             {/* Card Container */}
-            <div className="w-[480px] bg-pro-900/50    rounded-3xl p-10 flex flex-col items-center ">
+            <div className="w-[480px] rounded-3xl p-10 flex flex-col items-center ">
               <div className="mb-6 relative">
                 <img src={logo} alt="Kenichi Lite Logo" className="w-24 h-24 " />
               </div>
@@ -335,7 +344,10 @@ function App() {
         {currentItem && (
           <div
             className="w-full h-full relative flex items-center justify-center bg-black transition-all duration-300"
-            style={{ paddingBottom: filmstripVisible ? '180px' : '48px' }}
+            style={{
+              paddingBottom: filmstripVisible ? '184px' : '64px',
+              paddingTop: '48px'
+            }}
           >
             {currentItem.type === 'video' ? (
               <>
@@ -372,9 +384,18 @@ function App() {
               </>
             ) : (
               <img
+                key={currentItem.path}
                 src={getMediaUrl(currentItem.path)}
                 alt={currentItem.name}
                 className="w-full h-full object-contain animate-fade-in"
+                // Simple way to get image resolution for now could be checking naturalWidth/Height in an onload handler
+                // For now, we'll just rely on file size from metadata if available
+                onLoad={(e) => {
+                  const img = e.currentTarget;
+                  const res = `${img.naturalWidth} x ${img.naturalHeight}`;
+                  const size = currentItem.size ? formatSize(currentItem.size) : '';
+                  setMetaInfo(`${res} • ${size}`);
+                }}
               />
             )}
           </div>
@@ -396,12 +417,11 @@ function App() {
         />
 
         <Footer
-          fileName={currentItem?.name || "No media"}
-          fileInfo={metaInfo || (playlist.length > 0 ? `${currentIndex + 1} / ${playlist.length}` : "")}
+          fileInfo={currentItem ? metaInfo : undefined}
           filmstripVisible={filmstripVisible}
-          onToggleFilmstrip={() => setFilmstripVisible(v => !v)}
+          onToggleFilmstrip={() => setFilmstripVisible(!filmstripVisible)}
           autoAdvance={autoAdvance}
-          onToggleAutoAdvance={() => setAutoAdvance(v => !v)}
+          onToggleAutoAdvance={() => setAutoAdvance(!autoAdvance)}
         />
       </div>
     </div>

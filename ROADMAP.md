@@ -57,5 +57,13 @@ Focus: Beyond just viewing—allowing users to create and modify media in-app.
   - **Annotate & Save**: Directly send video frames to the photo editor for markup.
 - [ ] **Export Options**: Save modified media back to disk or share instantly.
 
+## Phase 5: Visual Excellence (Windows 11 Style) 💠
+Focus: Refining the UI to match modern OS aesthetics (Deep Dark, Mica, Pill Buttons).
+
+- [ ] **Top Action Bar**: Implementing a dedicated "Edit" toolbar with "Trim", "Rotate", and "Delete" actions.
+- [ ] **Bottom Info Bar**: Refactoring to the "Three-Section" layout (Quick Actions | Hover Info | View Controls).
+- [ ] **Acrylic & Mica**: Adding subtle transparency effects to panels.
+- [ ] **Fluid Typography**: Adopting careful font weights and spacing similar to Segoe UI Variable.
+
 ---
 *Last Updated: January 29, 2026*

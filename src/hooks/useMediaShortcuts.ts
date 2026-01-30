@@ -9,6 +9,7 @@ interface UseMediaShortcutsProps {
     playlistLength: number;
     setCurrentIndex: (index: number | ((prev: number) => number)) => void;
     setFilmstripVisible: (visible: boolean | ((prev: boolean) => boolean)) => void;
+    onToggleFullscreen: () => void;
 }
 
 export function useMediaShortcuts({
@@ -17,7 +18,8 @@ export function useMediaShortcuts({
     currentIndex,
     playlistLength,
     setCurrentIndex,
-    setFilmstripVisible
+    setFilmstripVisible,
+    onToggleFullscreen
 }: UseMediaShortcutsProps) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,12 +42,8 @@ export function useMediaShortcuts({
                         }
                         break;
                     case "KeyF":
-                        if (currentItem?.type === 'video') {
-                            e.preventDefault();
-                            // @ts-ignore
-                            if (player.current.fullscreen) player.current.exitFullscreen();
-                            else player.current.enterFullscreen();
-                        }
+                        e.preventDefault();
+                        onToggleFullscreen();
                         break;
                     case "KeyM":
                         e.preventDefault();

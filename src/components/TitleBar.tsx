@@ -1,14 +1,15 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, Square, X, RotateCcw, PenLine, Scissors, Trash2, Fullscreen, Maximize, FullscreenIcon } from "lucide-react";
+import { Minus, Square, X, RotateCcw, PenLine, Scissors, Trash2, FullscreenIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import logo from "../assets/logo.png";
 
 interface TitleBarProps {
     filename?: string;
     mediaType?: 'video' | 'image' | 'audio';
+    hidden?: boolean;
 }
 
-export default function TitleBar({ filename, mediaType }: TitleBarProps) {
+export default function TitleBar({ filename, mediaType, hidden = false }: TitleBarProps) {
     const [isMaximized, setIsMaximized] = useState(false);
     const appWindow = getCurrentWindow();
 
@@ -41,18 +42,24 @@ export default function TitleBar({ filename, mediaType }: TitleBarProps) {
     const close = () => appWindow.close();
 
     return (
-        <div className="h-12 bg-zinc-950/30 backdrop-blur-2xl flex justify-between items-center select-none fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-linear-to-b from-white/5 to-transparent">
+        <div className={`h-12 bg-zinc-950/30 backdrop-blur-2xl flex justify-between items-center select-none fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-linear-to-b from-white/5 to-transparent ${hidden ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
             {/* Left: Branding & Logo */}
-            <div className="flex h-full items-center pl-4 gap-3 w-[200px]" data-tauri-drag-region>
-                <img src={logo} alt="Logo" className="w-5 h-5 opacity-80 pointer-events-none" />
-                <span className="text-sm font-medium text-pro-400 pointer-events-none">Kenichi Lite</span>
+            <div className="flex h-full items-center pl-4 gap-3 w-[250px]" data-tauri-drag-region>
+                <div className="relative group">
+                    <div className="absolute inset-0 bg-brand-orange/20 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src={logo} alt="Logo" className="w-6 h-6 object-contain relative transition-transform group-hover:scale-110 duration-300" />
+                </div>
+                <div className="flex flex-col -gap-1">
+                    <span className="text-sm font-bold tracking-tight text-white/90">KENICHI</span>
+                    <span className="text-[10px] font-medium tracking-widest text-brand-orange/80 -mt-1 uppercase">Lite</span>
+                </div>
             </div>
 
             {/* Center: Filename & Actions */}
             <div className="flex-1 flex items-center justify-center gap-4 h-full" data-tauri-drag-region>
                 {/* Filename */}
                 {filename && (
-                    <span className="text-sm text-white/90 font-medium truncate max-w-[300px] pointer-events-none">
+                    <span className="text-sm text-white/70 font-medium truncate max-w-[400px] pointer-events-none">
                         {filename}
                     </span>
                 )}

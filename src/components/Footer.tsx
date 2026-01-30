@@ -1,4 +1,4 @@
-import { Film, LayoutGrid, Heart, Info, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
+import { Library, Clapperboard, MonitorPlay, Heart, Info, ZoomIn, ZoomOut, Expand } from "lucide-react";
 import Tooltip from "./ui/Tooltip";
 
 interface FooterProps {
@@ -9,6 +9,7 @@ interface FooterProps {
     onToggleAutoAdvance: () => void;
     autoHideControls: boolean;
     onToggleAutoHide: () => void;
+    onToggleFullscreen: () => void;
 }
 
 export default function Footer({
@@ -18,7 +19,8 @@ export default function Footer({
     autoAdvance,
     onToggleAutoAdvance,
     autoHideControls,
-    onToggleAutoHide
+    onToggleAutoHide,
+    onToggleFullscreen
 }: FooterProps) {
     return (
         <div className="h-14 mb-2 mx-auto w-fit rounded-xl border border-white/5 bg-zinc-900/80 backdrop-blur-xl flex items-center gap-1 px-2 select-none z-50 transition-all duration-300 shadow-2xl">
@@ -32,7 +34,7 @@ export default function Footer({
                             : "text-zinc-400 hover:text-white hover:bg-white/5"
                             }`}
                     >
-                        <LayoutGrid size={18} />
+                        <Library size={18} />
                     </button>
                 </Tooltip>
 
@@ -44,7 +46,7 @@ export default function Footer({
                             : "text-zinc-400 hover:text-white hover:bg-white/5"
                             }`}
                     >
-                        <Film size={18} />
+                        <Clapperboard size={18} />
                     </button>
                 </Tooltip>
 
@@ -56,7 +58,7 @@ export default function Footer({
                             : "text-zinc-400 hover:text-white hover:bg-white/5"
                             }`}
                     >
-                        {autoHideControls ? <EyeOff size={18} /> : <Eye size={18} />}
+                        <MonitorPlay size={18} className={autoHideControls ? "opacity-50" : "opacity-100"} />
                     </button>
                 </Tooltip>
 
@@ -104,6 +106,15 @@ export default function Footer({
                 <Tooltip content="File Info" shortcut="I">
                     <button className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-all active:scale-95">
                         <Info size={18} />
+                    </button>
+                </Tooltip>
+
+                <Tooltip content="Fullscreen" shortcut="F">
+                    <button
+                        onClick={onToggleFullscreen}
+                        className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-all active:scale-95"
+                    >
+                        <Expand size={18} />
                     </button>
                 </Tooltip>
             </div>

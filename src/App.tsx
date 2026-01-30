@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { MediaPlayerInstance } from "@vidstack/react";
 import { open } from '@tauri-apps/plugin-dialog';
 
@@ -7,6 +7,7 @@ import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/layouts/audio.css";
 import "@vidstack/react/player/styles/base.css";
 
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import TitleBar from "./components/TitleBar";
 import Filmstrip from "./components/Filmstrip";
 import NavigationArrows from "./components/NavigationArrows";
@@ -34,6 +35,23 @@ function App() {
 
   // Settings
   const [autoHideControls, setAutoHideControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Sync isFullscreen state with window
+  useEffect(() => {
+    const checkFullscreen = async () => {
+      setIsFullscreen(await getCurrentWindow().isFullscreen());
+    };
+
+    checkFullscreen();
+    const unlisten = getCurrentWindow().onResized(() => {
+      checkFullscreen();
+    });
+
+    return () => {
+      unlisten.then(f => f());
+    };
+  }, []);
 
   const player = useRef<MediaPlayerInstance>(null);
 
@@ -47,7 +65,8 @@ function App() {
     currentIndex,
     playlistLength: playlist.length,
     setCurrentIndex,
-    setFilmstripVisible
+    setFilmstripVisible,
+    onToggleFullscreen: () => handleToggleFullscreen()
   });
 
   const handleOpen = async () => {
@@ -72,6 +91,13 @@ function App() {
     }
   };
 
+  const handleToggleFullscreen = async () => {
+    const appWindow = getCurrentWindow();
+    const isFS = await appWindow.isFullscreen();
+    await appWindow.setFullscreen(!isFS);
+    setIsFullscreen(!isFS);
+  };
+
   return (
     <div
       className="h-screen w-screen flex flex-col text-white overflow-hidden selection:bg-brand-yellow/30"
@@ -86,6 +112,7 @@ function App() {
       <TitleBar
         filename={currentItem?.name}
         mediaType={currentItem?.type}
+        hidden={isFullscreen}
       />
 
       {/* Main Content Area (Flex Grow) */}
@@ -151,6 +178,7 @@ function App() {
           onToggleAutoAdvance={() => setAutoAdvance(!autoAdvance)}
           autoHideControls={autoHideControls}
           onToggleAutoHide={() => setAutoHideControls(!autoHideControls)}
+          onToggleFullscreen={handleToggleFullscreen}
         />
       </div>
     </div>

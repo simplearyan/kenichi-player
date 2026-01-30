@@ -45,7 +45,6 @@ export default function MediaContainer({
                     className="w-full h-full object-contain ring-0 outline-none"
                     autoPlay
                     onEnd={onVideoEnd}
-                    key={currentItem.path}
                     load="eager"
                     preload="auto"
                 >

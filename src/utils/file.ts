@@ -9,9 +9,10 @@ export const getMediaUrl = (path: string) => {
     return `http://media.localhost/${encodedPath}`;
 };
 
-export const getMediaType = (filename: string): 'video' | 'image' | null => {
+export const getMediaType = (filename: string): 'video' | 'image' | 'audio' | null => {
     const ext = "." + filename.split('.').pop()?.toLowerCase();
-    if (VIDEO_EXTS.includes(ext) || AUDIO_EXTS.includes(ext)) return 'video';
+    if (VIDEO_EXTS.includes(ext)) return 'video';
+    if (AUDIO_EXTS.includes(ext)) return 'audio';
     if (IMAGE_EXTS.includes(ext)) return 'image';
     return null;
 };

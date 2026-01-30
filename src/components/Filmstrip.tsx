@@ -1,13 +1,6 @@
 import { useRef, useEffect } from "react";
-import { X, Play, Image as ImageIcon, Film } from "lucide-react";
-
-export interface MediaItem {
-    path: string;
-    name: string;
-    type: 'video' | 'image';
-    thumbnail?: string;
-    size?: number; // bytes
-}
+import { X, Play, Image as ImageIcon, Film, Headset } from "lucide-react";
+import { MediaItem } from "../types";
 
 interface FilmstripProps {
     items: MediaItem[];
@@ -50,7 +43,12 @@ export default function Filmstrip({ items, currentIndex, onSelect, onRemove, vis
                             {/* Placeholder / Thumbnail */}
                             <div className="w-full h-full bg-pro-800 flex items-center justify-center text-pro-500">
                                 {/* Real thumbnail logic would go here. For now, use Icon based on type */}
-                                {item.type === 'video' ? <Film size={20} /> : <ImageIcon size={20} />}
+                                {(() => {
+                                    const isAudio = item.type === 'audio' || item.path.toLowerCase().endsWith('.mp3') || item.path.toLowerCase().endsWith('.wav');
+                                    if (item.type === 'video') return <Film size={20} />;
+                                    if (isAudio) return <Headset size={20} />;
+                                    return <ImageIcon size={20} />;
+                                })()}
                             </div>
 
                             {/* Label Overlay */}

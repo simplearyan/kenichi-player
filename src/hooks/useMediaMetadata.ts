@@ -21,33 +21,43 @@ export function useMediaMetadata(currentItem?: MediaItem, player?: RefObject<Med
                 setMetaInfo(parts.join(" • "));
             };
             img.src = getMediaUrl(currentItem.path);
+            return;
         }
 
-        // 3. Video Handling via Vidstack Store Subscription
+        // 3. Media (Video/Audio) Handling via Vidstack Store Subscription
         let unsubscribe: (() => void) | undefined;
+        const isMedia = currentItem?.type === 'video' || currentItem?.type === 'audio';
 
-        if (currentItem?.type === 'video' && player) {
-            setTimeout(() => {
-                if (player.current) {
-                    unsubscribe = player.current.subscribe(({ videoWidth, videoHeight, duration }) => {
-                        const parts: string[] = [];
-                        if (videoWidth && videoHeight) parts.push(`${videoWidth} x ${videoHeight}`);
-                        if (sizeStr) parts.push(sizeStr);
-                        if (duration > 0) parts.push(formatTime(duration));
+        if (isMedia && player?.current) {
+            // Subscribe safely to player state
+            try {
+                unsubscribe = player.current.subscribe(({ videoWidth, videoHeight, duration }) => {
+                    const parts: string[] = [];
+                    // Only show resolution if it exists (usually video)
+                    if (videoWidth && videoHeight && videoWidth > 0) {
+                        parts.push(`${videoWidth} x ${videoHeight}`);
+                    }
+                    if (sizeStr) parts.push(sizeStr);
+                    if (duration > 0) parts.push(formatTime(duration));
 
-                        setMetaInfo(prev => {
-                            const newValue = parts.join(" • ");
-                            return prev === newValue ? prev : newValue;
-                        });
-                    });
-                }
-            }, 50);
+                    const newValue = parts.join(" • ");
+                    setMetaInfo(prev => prev === newValue ? prev : newValue);
+                });
+            } catch (err) {
+                console.warn("Failed to subscribe to player metadata:", err);
+            }
         }
 
         return () => {
-            if (unsubscribe) unsubscribe();
+            if (unsubscribe) {
+                try {
+                    unsubscribe();
+                } catch (e) {
+                    // Ignore errors during cleanup as player might already be disposed
+                }
+            }
         };
-    }, [currentItem]);
+    }, [currentItem, player?.current]);
 
     return { metaInfo, setMetaInfo };
 }

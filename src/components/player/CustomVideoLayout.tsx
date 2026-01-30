@@ -1,7 +1,6 @@
 import {
     Controls,
     Gesture,
-    MediaProvider,
     PlayButton,
     MuteButton,
     FullscreenButton,
@@ -54,14 +53,14 @@ export default function CustomVideoLayout({ autoHideControls }: { autoHideContro
                     {/* Play/Pause */}
                     <PlayButton className="group ring-media-focus relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full outline-none hover:bg-white/20 transition-colors">
                         {isPaused ? (
-                            <PlayIcon className="h-5 w-5 fill-white text-white translate-x-[1px]" />
+                            <PlayIcon className="h-5 w-5 fill-white text-white translate-x-px" />
                         ) : (
                             <PauseIcon className="h-5 w-5 fill-white text-white" />
                         )}
                     </PlayButton>
 
                     {/* Time Display */}
-                    <div className="flex items-center gap-1 text-sm font-medium text-white/90 font-mono text-xs">
+                    <div className="flex items-center gap-1 text-xs font-medium text-white/90 font-mono">
                         <Time type="current" />
                         <span className="text-white/50">/</span>
                         <Time type="duration" />
@@ -70,11 +69,11 @@ export default function CustomVideoLayout({ autoHideControls }: { autoHideContro
                     {/* Scrubber (Small, compact) */}
                     <TimeSlider.Root className="group relative mx-2 inline-flex h-6 w-48 cursor-pointer items-center outline-none">
                         <TimeSlider.Track className="relative h-1.5 w-full rounded-full bg-white/20 group-hover:h-2 transition-all">
-                            <TimeSlider.TrackFill className="absolute h-full w-[var(--chapter-fill)] rounded-full bg-brand-yellow/50" />
-                            <TimeSlider.TrackFill className="absolute h-full w-[var(--slider-fill)] rounded-full bg-brand-yellow will-change-[width]" />
-                            <TimeSlider.Progress className="absolute h-full w-[var(--slider-progress)] rounded-full bg-white/50" />
+                            <TimeSlider.TrackFill className="absolute h-full w-(--chapter-fill) rounded-full bg-brand-yellow/50" />
+                            <TimeSlider.TrackFill className="absolute h-full w-(--slider-fill) rounded-full bg-brand-yellow will-change-[width]" />
+                            <TimeSlider.Progress className="absolute h-full w-(--slider-progress) rounded-full bg-white/50" />
                         </TimeSlider.Track>
-                        <TimeSlider.Thumb className="absolute left-[var(--slider-fill)] top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#cacaca] bg-white opacity-0 ring-white/40 transition-opacity group-hover:opacity-100 will-change-[left]" />
+                        <TimeSlider.Thumb className="absolute left-(--slider-fill) top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#cacaca] bg-white opacity-0 ring-white/40 transition-opacity group-hover:opacity-100 will-change-[left]" />
                     </TimeSlider.Root>
 
                     {/* Volume */}
@@ -88,9 +87,9 @@ export default function CustomVideoLayout({ autoHideControls }: { autoHideContro
                         </MuteButton>
                         <VolumeSlider.Root className="relative mx-0 inline-flex h-1.5 w-0 origin-left cursor-pointer items-center outline-none transition-[width] duration-200 group-hover/vol:w-20 group-hover/vol:mx-1">
                             <VolumeSlider.Track className="relative h-1.5 w-full rounded-full bg-white/20">
-                                <VolumeSlider.TrackFill className="absolute h-full w-[var(--slider-fill)] rounded-full bg-white will-change-[width]" />
+                                <VolumeSlider.TrackFill className="absolute h-full w-(--slider-fill) rounded-full bg-white will-change-[width]" />
                             </VolumeSlider.Track>
-                            <VolumeSlider.Thumb className="absolute left-[var(--slider-fill)] top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-0 transition-opacity group-hover/vol:opacity-100 will-change-[left]" />
+                            <VolumeSlider.Thumb className="absolute left-(--slider-fill) top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-0 transition-opacity group-hover/vol:opacity-100 will-change-[left]" />
                         </VolumeSlider.Root>
                     </div>
 

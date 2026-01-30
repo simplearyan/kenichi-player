@@ -41,7 +41,7 @@ export default function TitleBar({ filename, mediaType }: TitleBarProps) {
     const close = () => appWindow.close();
 
     return (
-        <div className="h-12 bg-zinc-950/30 backdrop-blur-2xl flex justify-between items-center select-none fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gradient-to-b from-white/5 to-transparent">
+        <div className="h-12 bg-zinc-950/30 backdrop-blur-2xl flex justify-between items-center select-none fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-linear-to-b from-white/5 to-transparent">
             {/* Left: Branding & Logo */}
             <div className="flex h-full items-center pl-4 gap-3 w-[200px]" data-tauri-drag-region>
                 <img src={logo} alt="Logo" className="w-5 h-5 opacity-80 pointer-events-none" />

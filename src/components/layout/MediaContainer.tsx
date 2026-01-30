@@ -1,8 +1,9 @@
 import { MediaPlayer, MediaProvider, type MediaPlayerInstance } from "@vidstack/react";
 import CustomVideoLayout from "../player/CustomVideoLayout";
+import AudioVisualizer from "../player/AudioVisualizer";
 import { RefObject } from "react";
 import { MediaItem } from "../../types";
-import { getMediaUrl } from "../../utils/file";
+import { getMediaUrl, AUDIO_EXTS } from "../../utils/file";
 import { formatSize } from "../../utils/format";
 
 interface MediaContainerProps {
@@ -22,6 +23,8 @@ export default function MediaContainer({
     setMetaInfo,
     autoHideControls
 }: MediaContainerProps) {
+    const isAudio = currentItem.type === 'audio' || AUDIO_EXTS.some(ext => currentItem.path.toLowerCase().endsWith(ext));
+
     return (
         <div
             className="w-full h-full relative flex items-center justify-center bg-transparent transition-all duration-300"
@@ -30,11 +33,12 @@ export default function MediaContainer({
                 paddingTop: '48px'
             }}
         >
-            {currentItem.type === 'video' ? (
+            {currentItem.type === 'video' || isAudio ? (
                 <MediaPlayer
+                    key={currentItem.path}
                     ref={playerRef}
                     src={getMediaUrl(currentItem.path)}
-                    viewType="video"
+                    viewType={isAudio ? 'audio' : 'video'}
                     streamType="on-demand"
                     logLevel="warn"
                     crossOrigin
@@ -47,6 +51,7 @@ export default function MediaContainer({
                     preload="auto"
                 >
                     <MediaProvider />
+                    {isAudio && <AudioVisualizer />}
                     <CustomVideoLayout autoHideControls={autoHideControls} />
                 </MediaPlayer>
             ) : (

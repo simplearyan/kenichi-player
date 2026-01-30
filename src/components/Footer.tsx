@@ -20,7 +20,7 @@ export default function Footer({
     onToggleAutoHide
 }: FooterProps) {
     return (
-        <div className="h-16 bg-zinc-950/30 backdrop-blur-2xl flex items-center justify-between px-6 select-none z-50 transition-all duration-300 w-full bg-gradient-to-t from-white/5 to-transparent">
+        <div className="h-16 bg-zinc-950/30 backdrop-blur-2xl flex items-center justify-between px-6 select-none z-50 transition-all duration-300 w-full bg-linear-to-t from-white/5 to-transparent">
             {/* Left Section: Quick Actions */}
             <div className="flex items-center gap-2">
                 <div className="flex items-center bg-pro-800/50 rounded-lg p-1 gap-1 border border-white/5">
